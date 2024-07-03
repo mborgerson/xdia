@@ -23,7 +23,7 @@ jobs:
       shell: bash
       run: |
         MSDIA_PATH=$PWD/dist/bin/msdia140.dll ./dist/bin/xdia.exe ./tests/hello-wdm.pdb
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4.3.3
       with:
         name: xdia
         path: dist
@@ -53,7 +53,7 @@ jobs:
         export MSDIA_PATH=$PWD/xdia/bin/msdia140.dll
         export XDIA_PATH=$PWD/xdia/bin/xdia.exe
         ./dist/bin/xdialdr ./tests/hello-wdm.pdb
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4.3.3
       with:
         name: xdialdr
         path: dist
