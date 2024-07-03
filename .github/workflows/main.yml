@@ -95,6 +95,7 @@ jobs:
         # CIBW_TEST_COMMAND: python -m unittest discover -v -s {package}/tests
         CIBW_TEST_COMMAND: python -m pyxdia {project}/tests/hello-wdm.pdb
         CIBW_BUILD_VERBOSITY: 1
+        MACOSX_DEPLOYMENT_TARGET: 14
     - uses: actions/upload-artifact@v4.3.3
       with:
         name: ${{ matrix.wheel }}
