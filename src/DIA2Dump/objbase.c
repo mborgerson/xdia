@@ -6,11 +6,6 @@
 #include <dia2.h>
 #include "../pe-loader/uuids.h"
 
-// WINOLE32API HRESULT WINAPI CoInitialize(LPVOID lpReserved)
-// {
-//     return 0;
-// }
-
 void WINAPI DECLSPEC_HOTPATCH CoUninitialize(void)
 {
 }

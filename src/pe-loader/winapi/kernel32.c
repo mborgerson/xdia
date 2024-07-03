@@ -649,18 +649,6 @@ HMODULE WINAPI DECLSPEC_HOTPATCH LoadLibraryExA(LPCSTR name, HANDLE file,
     } else if (!strcasecmp(name, "ADVAPI32.dll")) {
         return (HMODULE)"ADVAPI32.dll";
     } else if (!strcasecmp(name, "msdia140.dll")) {
-
-        // static int is_loaded = 0;
-
-        // if (!is_loaded) {
-        //     const char *msdia140_dll_path = getenv("MSDIA_PATH");
-        //     if (!msdia140_dll_path) {
-        //         msdia140_dll_path = "msdia140.dll";
-        //     }
-        //     load_pe(msdia140_dll_path);
-        //     is_loaded = 1;
-        // }
-
         return (HMODULE)"msdia140.dll";
     } else {
         assert(0);
