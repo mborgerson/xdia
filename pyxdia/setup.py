@@ -11,21 +11,32 @@ def build_common():
     root_dir = Path(__file__).parent.absolute()
     pyxdia_dir = root_dir / "pyxdia"
     bin_dir = pyxdia_dir / "bin"
+
     xdia_exe_path = bin_dir / "xdia.exe"
     msdia140_dll_path = bin_dir / "msdia140.dll"
 
-    if not (xdia_exe_path.exists() and msdia140_dll_path.exists()):
-        raise RuntimeError("Missing xdia installation")
+    required_files = [xdia_exe_path, msdia140_dll_path]
+    if platform.system() != "Windows":
+        required_files.append(bin_dir / "xdialdr")
+        if platform.system() != "Linux" or platform.machine() != "x86_64":
+            required_files.append(bin_dir / "blink")
+
+    for required_file in required_files:
+        if not required_file.exists():
+            raise RuntimeError("Missing xdia installation")
+
 
 class build(build_py):
     def run(self):
         build_common()
         return super().run()
 
+
 class develop(_develop):
     def run(self):
         build_common()
         return super().run()
+
 
 setup(
     cmdclass=dict(build_py=build, develop=develop),
