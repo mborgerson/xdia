@@ -77,15 +77,15 @@ jobs:
 
   build-py-wheels:
     needs: ["build-py-sdist", "build-xdia", "build-xdialdr"]
-    name: Build Python wheel ${{ matrix.wheel }} on ${{ matrix.os }}
+    name: Build pyxdia wheel ${{ matrix.wheel }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - { arch: arm64,  wheel: cp310-macosx_arm64,     os: macos-latest  }
-          - { arch: x86_64, wheel: cp310-macosx_x86_64,    os: macos-13      }
-          - { arch: x86_64, wheel: cp310-manylinux_x86_64, os: ubuntu-latest }
-          - { arch: x86_64, wheel: cp310-win_amd64,        os: windows-2019  }
+          - { arch: arm64,  wheel: cp310-macosx_arm64,     os: macos-latest   }
+          - { arch: x86_64, wheel: cp310-macosx_x86_64,    os: macos-13       }
+          - { arch: x86_64, wheel: cp310-manylinux_x86_64, os: ubuntu-latest  }
+          - { arch: x86_64, wheel: cp310-win_amd64,        os: windows-latest }
     steps:
     - uses: actions/checkout@v4
       with:
