@@ -36,7 +36,7 @@ class CustomBdistWheel(bdist_wheel):
         plat_to_tag = {"Windows": "win", "Linux": "manylinux_2_28", "Darwin": "macosx_11_0"}
         plat = plat_to_tag.get(platform.system(), None)
         assert plat is not None, "FIXME: Unhandled platform tag"
-        return ("py3", "none", f"{plat}_{platform.machine()}")
+        return ("py3", "none", f"{plat}_{platform.machine().lower()}")
 
 
 class CheckXdiaInstallation(Command):
