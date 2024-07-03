@@ -58,25 +58,35 @@ jobs:
         name: xdialdr
         path: dist
 
-  build-wheels:
-    needs: ["build-xdia", "build-xdialdr"]
-    name: Build wheel ${{ matrix.wheel }} on ${{ matrix.os }}
+  build-py-sdist:
+    name: Build pyxdia sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5.1.0
+        with:
+          python-version: '3.10'
+      - name: Build sdist
+        run: |
+          python -m pip install --user build
+          python -m build --sdist --outdir dist ./pyxdia
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: pyxdia-src
+          path: dist/*.tar.gz
+
+  build-py-wheels:
+    needs: ["build-py-sdist", "build-xdia", "build-xdialdr"]
+    name: Build Python wheel ${{ matrix.wheel }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - { arch: arm64,  wheel: cp310-macosx_arm64,     os: macos-latest   }
-          - { arch: x86_64, wheel: cp310-macosx_x86_64,    os: macos-13       }
-          - { arch: x86_64, wheel: cp310-manylinux_x86_64, os: ubuntu-latest  }
-          - { arch: x86_64, wheel: cp310-win_amd64,        os: windows-2019 }
+          - { arch: arm64,  wheel: cp310-macosx_arm64,     os: macos-latest  }
+          - { arch: x86_64, wheel: cp310-macosx_x86_64,    os: macos-13      }
+          - { arch: x86_64, wheel: cp310-manylinux_x86_64, os: ubuntu-latest }
+          - { arch: x86_64, wheel: cp310-win_amd64,        os: windows-2019  }
     steps:
-    # - name: Download source distribution
-    #   uses: actions/download-artifact@v4.1.7
-    #   with:
-    #     name: source
-    # - name: Unpack source distribution
-    #   shell: bash
-    #   run: tar --strip-components 1 -xvf *.tar.gz
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -108,5 +118,5 @@ jobs:
         MACOSX_DEPLOYMENT_TARGET: ${{ matrix.arch == 'arm64' && '14' || '11' }}
     - uses: actions/upload-artifact@v4.3.3
       with:
-        name: ${{ matrix.wheel }}
+        name: pyxdia-whl-${{ matrix.wheel }}
         path: ./wheelhouse/*.whl
