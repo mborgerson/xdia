@@ -95,7 +95,10 @@ jobs:
         # CIBW_TEST_COMMAND: python -m unittest discover -v -s {package}/tests
         CIBW_TEST_COMMAND: python -m pyxdia {project}/tests/hello-wdm.pdb
         CIBW_BUILD_VERBOSITY: 1
-        MACOSX_DEPLOYMENT_TARGET: 14
+
+        # FIXME: This is based only on blink requirement. Check the binary to find the
+        #        actual requirement. This works for 1.1.0 release.
+        MACOSX_DEPLOYMENT_TARGET: ${{ matrix.arch == 'arm64' && '14' || '11' }}
     - uses: actions/upload-artifact@v4.3.3
       with:
         name: ${{ matrix.wheel }}

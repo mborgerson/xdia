@@ -32,8 +32,14 @@ class CustomBdistWheel(bdist_wheel):
     platform specific.
     """
 
+    @staticmethod
+    def _get_darwin_tag():
+        # FIXME: This is based only on blink requirement. Check the binary to find the
+        #        actual requirement. This works for 1.1.0 release.
+        return "macosx_" + ("14" if platform.machine() == "arm64" else "11") + "_0"
+
     def get_tag(self):
-        plat_to_tag = {"Windows": "win", "Linux": "linux", "Darwin": "macosx_14_0"}
+        plat_to_tag = {"Windows": "win", "Linux": "linux", "Darwin": self._get_darwin_tag()}
         plat = plat_to_tag.get(platform.system(), None)
         assert plat is not None, "FIXME: Unhandled platform tag"
         return ("py3", "none", f"{plat}_{platform.machine().lower()}")
