@@ -33,7 +33,7 @@ class CustomBdistWheel(bdist_wheel):
     """
 
     def get_tag(self):
-        plat_to_tag = {"Windows": "win", "Linux": "linux", "Darwin": "macosx_11_0"}
+        plat_to_tag = {"Windows": "win", "Linux": "linux", "Darwin": "macosx_14_0"}
         plat = plat_to_tag.get(platform.system(), None)
         assert plat is not None, "FIXME: Unhandled platform tag"
         return ("py3", "none", f"{plat}_{platform.machine().lower()}")
