@@ -85,7 +85,7 @@ jobs:
         merge-multiple: true
         path: pyxdia/pyxdia
     - name: Build wheel
-      uses: pypa/cibuildwheel@v2.17.0
+      uses: pypa/cibuildwheel@v2.19.2
       with:
         package-dir: pyxdia
         output-dir: wheelhouse
