@@ -1,5 +1,4 @@
 graft pyxdia
-prune pyxdia/bin
 include LICENSE.txt
 graft tests
 global-exclude *.so
