@@ -1,0 +1,103 @@
+name: Test
+
+on:
+  - push
+
+jobs:
+  build-xdia:
+    name: Build xdia on Windows
+    runs-on: windows-latest
+    steps:
+    - uses: actions/setup-python@v5.1.0
+      with:
+        python-version: '3.10'
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Build
+      run: |
+        cmake -Ssrc/xdia -Bbuild -Ax64
+        cmake --build build --config Release --parallel --verbose
+        cmake --install build --prefix dist
+    - name: Test
+      shell: bash
+      run: |
+        MSDIA_PATH=$PWD/dist/bin/msdia140.dll ./dist/bin/xdia.exe ./tests/hello-wdm.pdb
+
+        cp -r dist/* pyxdia/pyxdia
+        pip install --verbose ./pyxdia
+        python -m pyxdia ./tests/hello-wdm.pdb
+    - uses: actions/upload-artifact@v4
+      with:
+        name: xdia
+        path: dist
+
+  build-ubuntu:
+    needs: build-xdia
+    name: Build xdialdr on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-python@v5.1.0
+      with:
+        python-version: '3.10'
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/download-artifact@v4
+      with:
+        name: xdia
+        path: dist
+    - name: Build
+      run: |
+        cmake -Bbuild -S.
+        cmake --build build --target xdialdr
+        cmake --install build --prefix dist
+    - name: Test
+      run: |
+        export MSDIA_PATH=$PWD/dist/bin/msdia140.dll
+        export XDIA_PATH=$PWD/dist/bin/xdia.exe
+        ./dist/bin/xdialdr ./tests/hello-wdm.pdb
+
+        cp -r dist/* pyxdia/pyxdia
+        pip install ./pyxdia
+        python -m pyxdia ./tests/hello-wdm.pdb
+    - uses: actions/upload-artifact@v4
+      with:
+        name: xdialdr
+        path: dist
+
+  test-macos:
+    needs: build-ubuntu
+    name: Test on macOS
+    runs-on: macos-latest
+    steps:
+    - uses: actions/setup-python@v5.1.0
+      with:
+        python-version: '3.10'
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/download-artifact@v4
+      with:
+        name: xdialdr
+        path: dist
+    - name: Build blink
+      run: |
+        brew install make pkg-config
+        git clone https://github.com/jart/blink
+        cd blink
+        ./configure --prefix=$PWD/dist
+        gmake
+        gmake install
+        mv $PWD/dist/bin/blink ../dist/bin/
+    - name: Test
+      run: |
+        chmod +x ./dist/bin/xdialdr
+
+        export MSDIA_PATH=$PWD/dist/bin/msdia140.dll
+        export XDIA_PATH=$PWD/dist/bin/xdia.exe
+        ./dist/bin/blink ./dist/bin/xdialdr ./tests/hello-wdm.pdb
+
+        cp -r dist/* pyxdia/pyxdia
+        pip install ./pyxdia
+        python -m pyxdia ./tests/hello-wdm.pdb
