@@ -9,11 +9,7 @@ int wmain(int, const char *argv[]);
 
 int main(int argc, const char *argv[])
 {
-    const char *msdia140_dll_path = getenv("MSDIA_PATH");
-    if (!msdia140_dll_path) {
-        msdia140_dll_path = "msdia140.dll";
-    }
-    load_pe(msdia140_dll_path);
+    load_pe(getenv("MSDIA_PATH") ?: "msdia140.dll");
 
     int r = wmain(argc, argv);
 
