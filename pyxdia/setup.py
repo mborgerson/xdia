@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import platform
-import subprocess
+from pathlib import Path
 from setuptools import setup
 from setuptools.command.build_py import build_py
 from setuptools.command.develop import develop as _develop
+from wheel.bdist_wheel import bdist_wheel
+
+
+class CustomBdistWheel(bdist_wheel):
+    def get_tag(self):
+        plat_to_tag = {"Windows": "win", "Linux": "manylinux_2_28", "Darwin": "macosx_11_0"}
+        plat = plat_to_tag.get(platform.system(), None)
+        if plat is None:
+            raise RuntimeError("Unhandled platform tag")
+        return ("py3", "none", f"{plat}_{platform.machine()}")
+
 
 def build_common():
     root_dir = Path(__file__).parent.absolute()
@@ -39,7 +49,7 @@ class develop(_develop):
 
 
 setup(
-    cmdclass=dict(build_py=build, develop=develop),
-    packages=['pyxdia'],
-    package_data={'pyxdia': ['bin/*']},
-    )
+    cmdclass=dict(build_py=build, develop=develop, bdist_wheel=CustomBdistWheel),
+    packages=["pyxdia"],
+    package_data={"pyxdia": ["bin/*"]},
+)
