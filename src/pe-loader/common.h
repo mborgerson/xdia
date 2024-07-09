@@ -16,7 +16,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
-#include <glib.h>
+#include <unicode/ucnv.h>
+#include <unicode/ustring.h>
 
 #include <windef.h>
 #include <winbase.h>

@@ -2,12 +2,12 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/../include
 	${CMAKE_CURRENT_SOURCE_DIR}/../include/wine
 	${CMAKE_CURRENT_SOURCE_DIR}/../include/dia
-	${GLIB_INCLUDE_DIRS}
+	${ICU_INCLUDE_DIRS}
 	)
 
 add_compile_options(
 	${GLIB_CFLAGS_OTHER}
-	-D__USE_GNU -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112 -DWINE_UNICODE_NATIVE 
+	-D__USE_GNU -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112 -DWINE_UNICODE_NATIVE -DU_HAVE_STDINT_H
 	-fshort-wchar
 	-Wall
 	-Wno-unknown-pragmas
@@ -36,7 +36,7 @@ add_executable(dia2dump
 	DIA2Dump/objbase.c
 	)
 target_link_libraries(dia2dump
-	${GLIB_LIBRARIES}
+	${ICU_LIBRARIES}
 	)
 
 # xdia.exe loader
@@ -45,7 +45,7 @@ add_executable(xdialdr
 	xdia-loader/main.c
 	)
 target_link_libraries(xdialdr
-	${GLIB_LIBRARIES}
+	${ICU_LIBRARIES}
 	)
 
 install(TARGETS xdialdr DESTINATION bin)

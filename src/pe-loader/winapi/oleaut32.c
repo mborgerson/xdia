@@ -22,9 +22,12 @@ SAFEARRAY* WINAPI SafeArrayCreateVector(VARTYPE vt, LONG lLbound, ULONG cElement
 
 BSTR WINAPI SysAllocString(LPCOLESTR str)
 {
-    g_autofree gchar *str_utf8 = g_utf16_to_utf8(str, -1, NULL, NULL, NULL);
+#if DEBUG
+    char *str_utf8 = wc2c(str);
     LOG("%s(%s)", __func__, str_utf8);
-    return SysAllocStringLen(str, strlen(str_utf8));
+    free(str_utf8);
+#endif
+    return SysAllocStringLen(str, u_strlen(str));
 }
 
 void WINAPI DECLSPEC_HOTPATCH SysFreeString(BSTR str)

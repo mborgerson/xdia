@@ -54,13 +54,16 @@ HANDLE WINAPI DECLSPEC_HOTPATCH CreateFileMappingW(HANDLE file,
                                                    DWORD size_high,
                                                    DWORD size_low, LPCWSTR name)
 {
-    g_autofree gchar *name_utf8 = name ? g_utf16_to_utf8(name, -1, NULL, NULL, NULL) : NULL;
 
     assert(protect == PAGE_READONLY);
     assert(size_high == size_low && size_low == 0);
 
+#if DEBUG
+    char *name_utf8 = name ? wc2c(name) : NULL;
     LOG("%s(%p, %p, %x, %x, %x, %s)", __func__, file, sa, protect, size_high, size_low, name_utf8);
-    
+    free(name_utf8);
+#endif
+
     FileMapping *fm = malloc(sizeof(FileMapping));
     memset(fm, 0, sizeof(*fm));
     fm->f = (FILE *)file;
@@ -84,11 +87,12 @@ HANDLE WINAPI DECLSPEC_HOTPATCH CreateFileW(LPCWSTR filename, DWORD access,
                                             DWORD creation, DWORD attributes,
                                             HANDLE template)
 {
-    g_autofree gchar *filename_utf8 = g_utf16_to_utf8(filename, -1, NULL, NULL, NULL);
+    char *filename_utf8 = wc2c(filename);
     LOG("%s(%s, %x, %x, , %x, %x, %p)", __func__, filename_utf8, access, sharing, creation, attributes, template);
     assert(access == GENERIC_READ);
     FILE *f = fopen(filename_utf8, "rb");
     assert(f);
+    free(filename_utf8);
     return (HANDLE)f;
 }
 
@@ -331,18 +335,19 @@ DWORD WINAPI DECLSPEC_HOTPATCH GetFullPathNameA(LPCSTR name, DWORD len,
 DWORD WINAPI DECLSPEC_HOTPATCH GetFullPathNameW(LPCWSTR name, DWORD len,
                                                 LPWSTR buffer, LPWSTR *lastpart)
 {
-    g_autofree gchar *name_utf8 = g_utf16_to_utf8(name, -1, NULL, NULL, NULL);
+#if DEBUG
+    char *name_utf8 = wc2c(name);
     LOG("%s(%s, %d, %p, %p)", __func__, name_utf8, len, buffer, lastpart);
+    free(name_utf8);
+#endif
 
-    g_autofree gchar *out_utf8 = g_strdup_printf("C:\\%s", name_utf8);
-    size_t chars_to_copy = strlen(out_utf8) + 1;
-    size_t bytes_to_copy = chars_to_copy * sizeof(WCHAR);
-    assert(len >= chars_to_copy);
-    gunichar2 *out_utf16 = g_utf8_to_utf16(out_utf8, -1, NULL, NULL, NULL);
-    assert(buffer);
-    memcpy(buffer, out_utf16, bytes_to_copy);
-    assert(lastpart == NULL);
-    return strlen(out_utf8);
+    wchar_t *drive_prefix = L"C:\\";
+    assert(u_strlen(drive_prefix) == 3);
+    size_t out_sz = u_strlen(drive_prefix) + u_strlen(name) + 1;
+    assert(len >= out_sz);
+    u_strcpy(buffer, drive_prefix);
+    u_strcat(buffer, name);
+    return out_sz - 1;
 }
 
 WINBASEAPI DWORD WINAPI GetLastError(void)
@@ -402,14 +407,17 @@ HMODULE WINAPI DECLSPEC_HOTPATCH GetModuleHandleW(LPCWSTR module)
         return (HMODULE)"dummy.exe";
     }
 
-    g_autofree gchar *module_utf8 = g_utf16_to_utf8(module, -1, NULL, NULL, NULL);
+    HMODULE out;
+    char *module_utf8 = wc2c(module);
     LOG("%s(%s)", __func__, module_utf8);
     if (!strcasecmp(module_utf8, "kernel32.dll")) {
-        return (HMODULE)"KERNEL32.dll";
+        out = (HMODULE)"KERNEL32.dll";
     } else {
         assert(0);
     }
-    return NULL;
+
+    free(module_utf8);
+    return out;
 }
 
 UINT WINAPI GetOEMCP(void)
@@ -664,9 +672,11 @@ HMODULE WINAPI DECLSPEC_HOTPATCH LoadLibraryA( LPCSTR name )
 HMODULE WINAPI DECLSPEC_HOTPATCH LoadLibraryExW(LPCWSTR name, HANDLE file,
                                                 DWORD flags)
 {
-    g_autofree char *utf8_name = g_utf16_to_utf8(name, -1, NULL, NULL, NULL);
+    char *utf8_name = wc2c(name);
     LOG("%s(%s, %p, 0x%x)", __func__, utf8_name, file, flags);
-    return (HMODULE)LoadLibraryExA(utf8_name, file, flags);
+    HMODULE out = (HMODULE)LoadLibraryExA(utf8_name, file, flags);
+    free(utf8_name);
+    return out;
 }
 
 HGLOBAL WINAPI DECLSPEC_HOTPATCH LoadResource(HINSTANCE module, HRSRC rsrc)
@@ -749,21 +759,21 @@ LPVOID WINAPI DECLSPEC_HOTPATCH MapViewOfFile(HANDLE mapping, DWORD access,
     return NULL;
 }
 
-INT WINAPI DECLSPEC_HOTPATCH MultiByteToWideChar(UINT codepage, DWORD flags,
-                                                 const char *src, INT srclen,
-                                                 WCHAR *dst, INT dstlen)
+INT WINAPI DECLSPEC_HOTPATCH MultiByteToWideChar(UINT CodePage, DWORD dwFlags,
+                                                 const char *lpMultiByteStr, INT cbMultiByte,
+                                                 WCHAR *lpWideCharStr, INT cchWideChar)
 {
-    assert(srclen != 0);
+    assert(cbMultiByte != 0);
+    assert(lpWideCharStr && cchWideChar);
 
-    glong items_written;
-    LOG("%s(%d, %x, %s, %d, %p, %d)", __func__, codepage, flags, src, srclen, dst, dstlen);
-    g_autofree gunichar2 *src_utf16 = g_utf8_to_utf16(src, srclen, NULL, &items_written, NULL);
+    LOG("%s(%d, %x, %s, %d, %p, %d)", __func__, codepage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
 
-    if (dst) {
-        assert(dstlen >= items_written);
-        memcpy(dst, src_utf16, items_written * sizeof(WCHAR));
-    }
-    return items_written;
+    UErrorCode errorCode = U_ZERO_ERROR;
+    int32_t destLength = 0;
+    u_strFromUTF8(lpWideCharStr, cchWideChar, &destLength, lpMultiByteStr, cbMultiByte, &errorCode);
+    assert(errorCode != U_INVALID_CHAR_FOUND);
+
+    return destLength;
 }
 
 WINBASEAPI BOOL WINAPI QueryPerformanceCounter(LARGE_INTEGER *counter)
@@ -1062,40 +1072,31 @@ SIZE_T WINAPI DECLSPEC_HOTPATCH VirtualQuery(LPCVOID addr,
     return 0;
 }
 
-INT WINAPI DECLSPEC_HOTPATCH WideCharToMultiByte(UINT codepage, DWORD flags,
-                                                 LPCWSTR src, INT srclen,
-                                                 LPSTR dst, INT dstlen,
-                                                 LPCSTR defchar, BOOL *used)
+INT WINAPI DECLSPEC_HOTPATCH WideCharToMultiByte(UINT CodePage, DWORD dwFlags,
+                                                 LPCWSTR lpWideCharStr, INT cchWideChar,
+                                                 LPSTR lpMultiByteStr, INT cbMultiByte,
+                                                 LPCSTR lpDefaultChar, BOOL *lpUsedDefaultChar)
 {
-    LOG("%s(%d, 0x%x, %p, %d)", __func__, codepage, flags, src, srclen);
+    LOG("%s(%d, 0x%x, %p, %d)", __func__, CodePage, dwFlags, lpWideCharStr, cchWideChar);
 
-    bool null_terminated = srclen < 0;
+    UErrorCode errorCode = U_ZERO_ERROR;
+    int32_t destLength = 0;
+    u_strToUTF8(lpMultiByteStr, cbMultiByte, &destLength, lpWideCharStr, cchWideChar, &errorCode);
+    assert(errorCode != U_INVALID_CHAR_FOUND);
 
-    assert(sizeof(WCHAR) == 2);
+    int32_t bytesToWrite = destLength + (cchWideChar < 0 ? 1 : 0);
 
-    for (int i = 0; i < srclen; i++) {
-        assert(sizeof(src[i]) == 2);
-        LOG("%c", src[i]);
+    if (!lpMultiByteStr || cbMultiByte == 0) {
+        return bytesToWrite;
     }
 
-    g_autofree char *utf8 = g_utf16_to_utf8(src, srclen, NULL, NULL, NULL);
-
-    size_t bytes_to_copy = strlen(utf8) + null_terminated;
-
-    if (dst == 0 || dstlen == 0) {
-        return bytes_to_copy;
-    }
-
-    assert(dstlen >= 0);
-
-    memcpy(dst, utf8, MIN(bytes_to_copy, dstlen));
-
-    if (dstlen < bytes_to_copy) {
+    if (errorCode == U_BUFFER_OVERFLOW_ERROR) {
         last_error = ERROR_INSUFFICIENT_BUFFER;
         return 0;
     }
 
-    return bytes_to_copy;
+    assert(!U_FAILURE(errorCode));
+    return bytesToWrite;
 }
 
 BOOL WINAPI DECLSPEC_HOTPATCH WriteConsoleW(HANDLE handle, const void *buffer,
@@ -1126,9 +1127,14 @@ BOOL WINAPI DECLSPEC_HOTPATCH WriteFile(HANDLE file, LPCVOID buffer,
 BOOL WINAPI CopyFileW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName,
                BOOL bFailIfExists)
 {
-    g_autofree gchar *lpExistingFileName_utf8 = g_utf16_to_utf8(lpExistingFileName, -1, NULL, NULL, NULL);
-    g_autofree gchar *lpNewFileName_utf8 = g_utf16_to_utf8(lpNewFileName, -1, NULL, NULL, NULL);
+#if DEBUG
+    char *lpExistingFileName_utf8 = wc2c(lpExistingFileName);
+    char *lpNewFileName_utf8 = wc2c(lpNewFileName);
     LOG("%s(%s, %s, %d)", __func__, lpExistingFileName_utf8, lpNewFileName_utf8, bFailIfExists);
+    free(lpExistingFileName_utf8);
+    free(lpNewFileName_utf8);
+#endif
+
     assert(0);
     return TRUE;
 }
@@ -1138,8 +1144,11 @@ BOOL WINAPI CreateDirectoryW(
   LPSECURITY_ATTRIBUTES lpSecurityAttributes
 )
 {
-    g_autofree gchar *lpPathName_utf8 = g_utf16_to_utf8(lpPathName, -1, NULL, NULL, NULL);
+#if DEBUG
+    char *lpPathName_utf8 = wc2c(lpPathName);
     LOG("%s(%s, %p)", __func__, lpPathName_utf8, lpSecurityAttributes);
+    free(lpPathName_utf8);
+#endif
     assert(0);
     return TRUE;
 }

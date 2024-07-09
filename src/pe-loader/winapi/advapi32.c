@@ -12,14 +12,14 @@ LSTATUS WINAPI RegOpenKeyExW(HKEY hKey, LPCWSTR lpSubKey, DWORD ulOptions,
                       REGSAM samDesired, PHKEY phkResult)
 {
     LOG("%s(%p, %p, %x, ", __func__, hKey, lpSubKey, ulOptions);
+#if DEBUG
     if (lpSubKey) {
-        g_autofree gchar *lpSubKey_utf8 = g_utf16_to_utf8(lpSubKey, -1, NULL, NULL, NULL);
+        char *lpSubKey_utf8 = wc2c(lpSubKey);
         LOG("-> %s", lpSubKey_utf8);
+        free(lpSubKey_utf8);
     }
-    // assert(0);
+#endif
     return ERROR_FILE_NOT_FOUND;
-
-    return 0;
 }
 
 LSTATUS WINAPI RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName,
@@ -27,11 +27,13 @@ LSTATUS WINAPI RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName,
                                 LPBYTE lpData, LPDWORD lpcbData)
 {
     LOG("%s(%p, %p, %p, %p, %p, %p)", __func__, hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
-
+#if DEBUG
     if (lpValueName) {
-        g_autofree gchar *lpValueName_utf8 = g_utf16_to_utf8(lpValueName, -1, NULL, NULL, NULL);
+        char *lpValueName_utf8 = wc2c(lpValueName);
         LOG("-> %s", lpValueName_utf8);
+        free(lpValueName_utf8);
     }
+#endif
 
     assert(0);
     return 0;
