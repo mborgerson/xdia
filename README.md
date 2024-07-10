@@ -3,7 +3,7 @@ xdia
 
 xdia is a utility to extract useful program information from a [PDB file](https://en.wikipedia.org/wiki/Program_database) in an easily parsed format (currently JSON) for other tools to consume. xdia can be run on Windows, Linux, macOS, and other platforms.
 
-A number of third party resources for parsing PDB files, however most have limitations in compatibility. This is due in large part to the fact that the PDB format has been around for a long time, is complex, apart from [some reference code](https://github.com/microsoft/microsoft-pdb) is only unofficially documented, and still evolving.
+A number of third party resources exist for parsing PDB files, however most have limitations in compatibility. This is due in large part to the fact that the PDB format has been around for a long time, is complex, apart from [some reference code](https://github.com/microsoft/microsoft-pdb) is only unofficially documented, and still evolving.
 
 For superior compatibility, and to avoid maintaining yet another PDB parsing library, xdia simply leverages the official [Debug Interface Access SDK](https://learn.microsoft.com/en-us/visualstudio/debugger/debug-interface-access/debug-interface-access-sdk?view=vs-2022).
 
