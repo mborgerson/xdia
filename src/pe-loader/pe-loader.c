@@ -1,6 +1,11 @@
 #include "common.h"
+#include <libgen.h>
 
+#if defined(__GLIBC__)
 #include <asm/prctl.h>
+#else
+#define ARCH_SET_GS     0x1001
+#endif
 #include <sys/prctl.h>
 
 #include "winternl.h"
@@ -16,7 +21,7 @@ PEB peb = {
 };
 TEB teb = {
     .Tib = {
-        .Self = &teb,
+        .Self = (void*)&teb,
     },
     .Peb = &peb,
     .ThreadLocalStoragePointer = tls_array,
@@ -478,7 +483,7 @@ uint8_t *load_pe(const char *path)
     for (int i = 0; i < ARRAYSIZE(modules); i++) {
         if (!modules[i]) {
             module = malloc(sizeof(*module));
-            module->name = strdup(basename(path));
+            module->name = strdup(basename(strdup(path)));
             module->base = idata;
             module->exports = NULL;
             module->num_exports = 0;

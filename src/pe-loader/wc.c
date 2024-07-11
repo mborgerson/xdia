@@ -1,9 +1,9 @@
 #include "common.h"
 
-_Static_assert(sizeof(wchar_t) == 2, "sizeof(wchar_t) != 2");
-_Static_assert(sizeof(wchar_t) == sizeof(UChar), "sizeof(wchar_t) != sizeof(UChar)");
+_Static_assert(sizeof(char16_t) == 2, "sizeof(char16_t) != 2");
+_Static_assert(sizeof(char16_t) == sizeof(UChar), "sizeof(char16_t) != sizeof(UChar)");
 
-char *wc2c(const wchar_t *s)
+char *wc2c(const char16_t *s)
 {
     UErrorCode errorCode = U_ZERO_ERROR;
     int32_t len = 0;
@@ -18,7 +18,7 @@ char *wc2c(const wchar_t *s)
     return dst;
 }
 
-wchar_t *c2wc(const char *s)
+char16_t *c2wc(const char *s)
 {
     UErrorCode errorCode = U_ZERO_ERROR;
     int32_t len = 0;

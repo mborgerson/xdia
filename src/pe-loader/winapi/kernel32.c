@@ -1,7 +1,7 @@
 #include "../common.h"
 
 extern char *command_line_a;
-extern wchar_t *command_line_w;
+extern char16_t *command_line_w;
 
 typedef struct FlsSlot {
     bool occupied;
@@ -279,7 +279,7 @@ UINT WINAPI DECLSPEC_HOTPATCH GetDriveTypeW(LPCWSTR root)
 LPWSTR WINAPI DECLSPEC_HOTPATCH GetEnvironmentStringsW(void)
 {
     LOG("%s", __func__);
-    return L"PATH=C:\\Windows\0\0";
+    return u"PATH=C:\\Windows\0\0";
 }
 
 DWORD WINAPI DECLSPEC_HOTPATCH GetFileAttributesW(LPCWSTR name)
@@ -341,7 +341,7 @@ DWORD WINAPI DECLSPEC_HOTPATCH GetFullPathNameW(LPCWSTR name, DWORD len,
     free(name_utf8);
 #endif
 
-    wchar_t *drive_prefix = L"C:\\";
+    char16_t *drive_prefix = u"C:\\";
     assert(u_strlen(drive_prefix) == 3);
     size_t out_sz = u_strlen(drive_prefix) + u_strlen(name) + 1;
     assert(len >= out_sz);
@@ -380,7 +380,7 @@ DWORD WINAPI DECLSPEC_HOTPATCH GetModuleFileNameW(HMODULE module,
     LOG("%s(%s)", __func__, module);
 
     if (module == NULL) {
-        wchar_t *module = L"dummy.exe";
+        char16_t *module = u"dummy.exe";
         int module_len = 10;
         if (filename) {
             assert(size >= 10);

@@ -93,8 +93,8 @@ bool LoadDataFromPdb(
     IDiaSession     **ppSession,
     IDiaSymbol      **ppGlobal)
 {
-  // wchar_t wszExt[MAX_PATH];
-  // const wchar_t *wszSearchPath = "SRV**\\\\symbols\\symbols"; // Alternate path to search for debug data
+  // char16_t wszExt[MAX_PATH];
+  // const char16_t *wszSearchPath = "SRV**\\\\symbols\\symbols"; // Alternate path to search for debug data
   DWORD dwMachType = 0;
 
   HRESULT hr = CoInitialize(NULL);
@@ -1621,7 +1621,7 @@ bool DumpSymbolsWithRegEx(IDiaSymbol *pGlobal, const char *szRegEx, const char *
   IDiaSymbol *pSymbol;
   ULONG celt = 0;
 
-  wchar_t *szChildname_w = c2wc(szChildname);
+  char16_t *szChildname_w = c2wc(szChildname);
 
   while (SUCCEEDED(pEnumSymbols->Next(1, &pSymbol, &celt)) && (celt == 1)) {
     PrintGeneric(pSymbol);
@@ -1640,7 +1640,7 @@ bool DumpSymbolsWithRegEx(IDiaSymbol *pGlobal, const char *szRegEx, const char *
 // Dump the information corresponding to a symbol name which
 //  is a children of the specified parent symbol
 //
-bool DumpSymbolWithChildren(IDiaSymbol *pSymbol, const wchar_t *szChildname)
+bool DumpSymbolWithChildren(IDiaSymbol *pSymbol, const char16_t *szChildname)
 {
   if (szChildname != NULL) {
     IDiaEnumSymbols *pEnumSyms;
@@ -1893,7 +1893,7 @@ bool DumpMapToSrc(IDiaSession *pSession, DWORD dwRVA)
       bstrName = NULL;
     }
 
-    if (bstrName && wcscmp(bstrName, L"OMAPTO") == 0) {
+    if (bstrName && u_strcmp(bstrName, u"OMAPTO") == 0) {
       OMAP_DATA data, datasav;
       DWORD cbData;
       DWORD dwRVATo = 0;
@@ -1962,7 +1962,7 @@ bool DumpMapFromSrc(IDiaSession *pSession, DWORD dwRVA)
       bstrName = NULL;
     }
 
-    if (bstrName && wcscmp(bstrName, L"OMAPFROM") == 0) {
+    if (bstrName && u_strcmp(bstrName, u"OMAPFROM") == 0) {
       OMAP_DATA data;
       OMAP_DATA datasav;
       DWORD cbData;

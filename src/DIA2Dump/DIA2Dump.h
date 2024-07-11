@@ -36,7 +36,7 @@ bool DumpFPO(IDiaSession *, DWORD);
 bool DumpFPO(IDiaSession *, IDiaSymbol *, const char *);
 bool DumpSymbolWithRVA(IDiaSession *, DWORD, const char *);
 bool DumpSymbolsWithRegEx(IDiaSymbol *, const char *, const char *);
-bool DumpSymbolWithChildren(IDiaSymbol *, const wchar_t *);
+bool DumpSymbolWithChildren(IDiaSymbol *, const char16_t *);
 bool DumpLines(IDiaSession *, DWORD);
 bool DumpLines(IDiaSession *, IDiaSymbol *, const char *);
 bool DumpType(IDiaSymbol *, const char *);

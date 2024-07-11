@@ -3,7 +3,7 @@
 #include "../pe-loader/common.h"
 
 char *command_line_a = "dummy.exe";
-wchar_t *command_line_w = L"dummy.exe";
+char16_t *command_line_w = u"dummy.exe";
 
 int wmain(int, const char *argv[]);
 

@@ -5,8 +5,8 @@
 #include "../pe-loader/uuids.h"
 
 extern "C" {
-char *wc2c(const wchar_t *);
-wchar_t *c2wc(const char *);
+char *wc2c(const char16_t *);
+char16_t *c2wc(const char *);
 }
 
 #include <assert.h>

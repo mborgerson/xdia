@@ -2,12 +2,11 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/../include
 	${CMAKE_CURRENT_SOURCE_DIR}/../include/wine
 	${CMAKE_CURRENT_SOURCE_DIR}/../include/dia
-	${ICU_INCLUDE_DIRS}
 	)
 
 add_compile_options(
 	${GLIB_CFLAGS_OTHER}
-	-D__USE_GNU -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112 -DWINE_UNICODE_NATIVE -DU_HAVE_STDINT_H
+	-D__USE_GNU -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112  -DU_HAVE_STDINT_H
 	-fshort-wchar
 	-Wall
 	-Wno-unknown-pragmas

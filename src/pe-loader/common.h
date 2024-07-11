@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <unicode/ucnv.h>
 #include <unicode/ustring.h>
+#include <uchar.h>
 
 #include <windef.h>
 #include <winbase.h>
@@ -75,8 +76,8 @@ uintptr_t resolve_import_by_ordinal(const char *dll, int ordinal);
 extern "C" {
 #endif
 
-char *wc2c(const wchar_t *);
-wchar_t *c2wc(const char *);
+char *wc2c(const char16_t *);
+char16_t *c2wc(const char *);
 
 #ifdef __cplusplus
 };

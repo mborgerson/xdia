@@ -2,7 +2,7 @@
 #include "../pe-loader/common.h"
 
 char *command_line_a;
-wchar_t *command_line_w;
+char16_t *command_line_w;
 
 int main(int argc, const char *argv[])
 {
