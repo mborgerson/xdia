@@ -12,15 +12,15 @@ For superior compatibility, and to avoid maintaining yet another PDB parsing lib
 
 ## Cross-platform Support
 
-The main application, `xdia.exe`, is a native Windows command-line application, but the project also includes xdia-loader (`xdialdr`) which can load and run `xdia.exe` on Linux. xdia-loader is a minimal loader and compatibility layer, like [Wine](https://www.winehq.org/) but focused only on running `xdia.exe` and its dependencies.
+The main application, `xdia.exe`, is a native Windows command-line application, but the project also includes `xdialdr` (xdia loader) which can load and run `xdia.exe` on Linux. `xdialdr` is a minimal loader and compatibility layer, like [Wine](https://www.winehq.org/) but focused only on running `xdia.exe` and its dependencies.
 
-In combination with xdia-loader, the [Blink](https://github.com/jart/blink) emulator can be used to run xdia.exe on other operating systems and architectures, including macOS on Apple Silicon.
+In combination with `xdialdr`, the [Blink](https://github.com/jart/blink) emulator can be used to run `xdia.exe` on other operating systems and architectures, including macOS on Apple Silicon.
 
 ## Usage
 
 `xdia.exe /path/to/your.pdb`
 
-or, if using xdia-loader:
+or, if using xdialdr:
 
 `xdialdr /path/to/your.pdb`
 
@@ -55,7 +55,7 @@ It is a near-term goal of xdia project to provide more information, namely detai
 
 ## Building xdia
 
-xdia.exe is intended only to be built with Visual Studio tools targeting x86-64 and CMake:
+`xdia.exe` is intended only to be built with Visual Studio tools targeting x86-64 and CMake:
 
 ```
 cmake -Ssrc/xdia -Bbuild -Ax64
@@ -65,9 +65,9 @@ cd dist
 xdia.exe <path-to-pdb>
 ```
 
-## Building xdia-loader
+## Building xdialdr
 
-Similarly, xdia-loader is intended to be built targeting an x86-64 Linux machine with CMake:
+Similarly, `xdialdr` is intended to be built targeting an x86-64 Linux machine with CMake:
 
 ```
 cmake -S. -Bbuild
