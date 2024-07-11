@@ -491,10 +491,6 @@ typedef short           SHORT,      *PSHORT;
 #if !defined(__LP64__) && !defined(WINE_NO_LONG_TYPES)
 typedef long            LONG,       *PLONG;
 #else
-#if defined(__LP64__)
-// FUCK1
-#endif
-// FUCK
 typedef int             LONG,       *PLONG;
 #endif
 
