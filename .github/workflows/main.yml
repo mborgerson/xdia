@@ -109,8 +109,8 @@ jobs:
       env:
         CIBW_ARCHS_MACOS: ${{ matrix.arch }}
         CIBW_BUILD: ${{ matrix.wheel }}
-        # CIBW_TEST_COMMAND: python -m unittest discover -v -s {package}/tests
-        CIBW_TEST_COMMAND: python -m pyxdia {project}/tests/hello-wdm.pdb
+        CIBW_TEST_COMMAND: PDB_TEST_FILES={project}/tests python -m unittest discover -v -s {package}/tests
+        CIBW_TEST_COMMAND_WINDOWS: set "PDB_TEST_FILES={project}/tests" & python -m unittest discover -v -s {package}/tests
         CIBW_BUILD_VERBOSITY: 1
 
         # FIXME: This is based only on blink requirement. Check the binary to find the
