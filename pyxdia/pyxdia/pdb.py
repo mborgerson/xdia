@@ -3,6 +3,7 @@ import os
 import pathlib
 import platform
 import subprocess
+from pprint import pprint
 
 
 ROOT_PATH = pathlib.Path(__file__).parent.absolute()
@@ -12,34 +13,55 @@ XDIALDR_PATH = ROOT_PATH / "bin" / "xdialdr"
 BLINK_PATH = ROOT_PATH / "bin" / "blink"
 
 
-def load_pdb(pdb_path: str | pathlib.Path):
-	if not isinstance(pdb_path, pathlib.Path):
-		pdb_path = pathlib.Path(pdb_path).absolute()
+class PDB:
+    """
+    This class interfaces with the xdia utility to extract useful program information from a Program Database (PDB) file.
+    """
 
-	env = {"MSDIA_PATH": str(MSDIA_DLL_PATH), "XDIA_PATH": str(XDIA_EXE_PATH)}
-	blink_required = False
+    _pdb_data: dict
 
-	if platform.system() == "Windows":
-		cmd = [XDIA_EXE_PATH]
-	else:
-		# FIXME: Move to post-install hook
-		for path in [XDIALDR_PATH, BLINK_PATH]:
-			if path.exists():
-				os.chmod(str(path), 0o755)
+    def __init__(self, pdb_path: str | pathlib.Path):
+        self._load_pdb(pdb_path)
 
-		blink_required = (platform.system() != "Linux") or (platform.machine() != "x86_64")
-		if blink_required:
-			# XXX: Work around blink VFS mount issue
-			env["BLINK_PREFIX"] = "/tmp"
-			env["MSDIA_PATH"] = "/SystemRoot" + env["MSDIA_PATH"]
-			env["XDIA_PATH"] = "/SystemRoot" + env["XDIA_PATH"]
-			pdb_path = pathlib.Path("/SystemRoot") / pdb_path.relative_to("/")
-			xdialdr_path = pathlib.Path("/SystemRoot") / XDIALDR_PATH.relative_to("/")
-			cmd = [BLINK_PATH, xdialdr_path]
-		else:
-			cmd = [XDIALDR_PATH]
+    def _load_pdb(self, pdb_path: str | pathlib.Path) -> None:
+        # Ensure pdb_path is a pathlib.Path
+        if not isinstance(pdb_path, pathlib.Path):
+            pdb_path = pathlib.Path(pdb_path).absolute()
 
-	cmd.append(str(pdb_path))
+        env = {"MSDIA_PATH": str(MSDIA_DLL_PATH), "XDIA_PATH": str(XDIA_EXE_PATH)}
 
-	diadump_s = subprocess.check_output(cmd, encoding="utf-8", env=env)
-	return json.loads(diadump_s)
+        if platform.system() == "Windows":
+            cmd = [XDIA_EXE_PATH]
+        else:
+            # FIXME: Move to post-install hook
+            for path in [XDIALDR_PATH, BLINK_PATH]:
+                if path.exists():
+                    os.chmod(str(path), 0o755)
+
+            blink_required = (platform.system() != "Linux") or (platform.machine() != "x86_64")
+            if blink_required:
+                # XXX: Work around blink VFS mount issue
+                env["BLINK_PREFIX"] = "/tmp"
+                env["MSDIA_PATH"] = "/SystemRoot" + env["MSDIA_PATH"]
+                env["XDIA_PATH"] = "/SystemRoot" + env["XDIA_PATH"]
+                pdb_path = pathlib.Path("/SystemRoot") / pdb_path.relative_to("/")
+                xdialdr_path = pathlib.Path("/SystemRoot") / XDIALDR_PATH.relative_to("/")
+                cmd = [BLINK_PATH, xdialdr_path]
+            else:
+                cmd = [XDIALDR_PATH]
+
+        diadump_s = subprocess.check_output(cmd + [str(pdb_path)], encoding="utf-8", env=env)
+        self._pdb_data = json.loads(diadump_s)
+
+    def pp(self) -> None:
+        """
+        Pretty-print all available info.
+        """
+        pprint(self._pdb_data, indent=2)
+
+    @property
+    def globals(self) -> list[dict[str, int | str]]:
+        """
+        List all globals.
+        """
+        return self._pdb_data["globals"]

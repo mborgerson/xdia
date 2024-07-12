@@ -1,5 +1,3 @@
-from .pdb import load_pdb
+from .pdb import PDB
 
-__all__ = [
-	"load_pdb"
-]
+__all__ = ["PDB"]

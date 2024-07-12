@@ -1,17 +1,16 @@
 import argparse
-from pprint import pprint
 
-from .pdb import load_pdb
+from .pdb import PDB
 
 
 def main():
-	ap = argparse.ArgumentParser("pyxdia")
-	ap.add_argument("pdb", help="Path to PDB file")
-	args = ap.parse_args()
+    ap = argparse.ArgumentParser("pyxdia")
+    ap.add_argument("pdb", help="Path to PDB file")
+    args = ap.parse_args()
 
-	pdb = load_pdb(args.pdb)
-	pprint(pdb, indent=2)
+    pdb = PDB(args.pdb)
+    pdb.pp()
 
 
-if __name__ == '__main__':
-	main()
+if __name__ == "__main__":
+    main()
