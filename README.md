@@ -31,7 +31,7 @@ or, if using xdialdr:
 | `MSDIA_PATH` | Path to msdia140.dll, default ./msdia140.dll |
 | `XDIA_PATH`  | Path to xdia.exe, default ./xdia.exe         |
 
-## Limatitons (What's extracted from the PDB?)
+## Limitations (What's extracted from the PDB?)
 
 Currently, only globals are listed. Example:
 
@@ -80,3 +80,9 @@ cd dist
 ## Python Support
 
 pyxdia provides a Python interface to xdia. PyPI release coming shortly.
+
+## License
+
+- [xdia](src/xdia/docs/xdia.LICENSE.txt)
+- [xdialdr](src/xdia-loader/docs/xdialdr.LICENSE.txt)
+- [pyxdia](pyxdia/LICENSE.txt)

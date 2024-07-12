@@ -15,5 +15,9 @@ add_executable(xdia
 	util.cpp
 	)
 
-install(TARGETS xdia DESTINATION bin)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/msdia140.dll DESTINATION bin)
+install(TARGETS xdia DESTINATION .)
+install(FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/xdia.LICENSE.txt
+	${CMAKE_CURRENT_SOURCE_DIR}/../../lib/msdia140.dll
+	DESTINATION .
+	)

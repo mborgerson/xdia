@@ -73,9 +73,10 @@ class CheckXdiaInstallation(Command):
         self._blink_path = self._bin_dir / "blink"
 
     @staticmethod
-    def _download_file(url) -> str:
+    def _download_file(url, filename = "") -> str:
         print(f'Downloading {url}...')
-        filename = url.split("/")[-1]
+        if not filename:
+            filename = url.split("/")[-1]
         urlretrieve(url, filename)
         urlcleanup()
         return filename
@@ -159,6 +160,9 @@ class CheckXdiaInstallation(Command):
         else:
             shutil.copyfile(blink_filename, self._blink_path)
         self._mark_file_executable(self._blink_path)
+
+        blink_license_url = "https://raw.githubusercontent.com/jart/blink/master/LICENSE"
+        self._download_file(blink_license_url, self._blink_path.parent / "blink.LICENSE.txt")
 
     def run(self):
         if not self._is_xdia_installed():

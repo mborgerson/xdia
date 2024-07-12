@@ -22,7 +22,7 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        MSDIA_PATH=$PWD/dist/bin/msdia140.dll ./dist/bin/xdia.exe ./tests/hello-wdm.pdb
+        MSDIA_PATH=$PWD/dist/msdia140.dll ./dist/xdia.exe ./tests/hello-wdm.pdb
     - uses: actions/upload-artifact@v4.3.3
       with:
         name: xdia
@@ -50,9 +50,9 @@ jobs:
         cmake --install build --prefix dist
     - name: Test
       run: |
-        export MSDIA_PATH=$PWD/xdia/bin/msdia140.dll
-        export XDIA_PATH=$PWD/xdia/bin/xdia.exe
-        ./dist/bin/xdialdr ./tests/hello-wdm.pdb
+        export MSDIA_PATH=$PWD/xdia/msdia140.dll
+        export XDIA_PATH=$PWD/xdia/xdia.exe
+        ./dist/xdialdr ./tests/hello-wdm.pdb
     - uses: actions/upload-artifact@v4.3.3
       with:
         name: xdialdr
@@ -94,13 +94,13 @@ jobs:
       uses: actions/download-artifact@v4.1.7
       with:
         name: xdia
-        path: pyxdia/pyxdia
+        path: pyxdia/pyxdia/bin
     - name: Install xdialdr
       uses: actions/download-artifact@v4.1.7
       if: ${{ !startsWith(matrix.os, 'windows') }}
       with:
         name: xdialdr
-        path: pyxdia/pyxdia
+        path: pyxdia/pyxdia/bin
     - name: Build wheel
       uses: pypa/cibuildwheel@v2.19.2
       with:

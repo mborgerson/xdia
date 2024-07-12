@@ -47,4 +47,8 @@ target_link_libraries(xdialdr
 	${ICU_LIBRARIES}
 	)
 
-install(TARGETS xdialdr DESTINATION bin)
+install(TARGETS xdialdr DESTINATION .)
+install(FILES
+	xdia-loader/xdialdr.LICENSE.txt
+	DESTINATION .
+	)
