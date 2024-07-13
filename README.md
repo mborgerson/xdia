@@ -83,6 +83,6 @@ cd dist
 
 ## License
 
-- [xdia](src/xdia/docs/xdia.LICENSE.txt)
-- [xdialdr](src/xdia-loader/docs/xdialdr.LICENSE.txt)
+- [xdia](src/xdia/xdia.LICENSE.txt)
+- [xdialdr](src/xdia-loader/xdialdr.LICENSE.txt)
 - [pyxdia](pyxdia/LICENSE.txt)
