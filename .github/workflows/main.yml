@@ -20,9 +20,7 @@ jobs:
         cmake --build build --config Release --parallel --verbose
         cmake --install build --prefix dist
     - name: Test
-      shell: bash
-      run: |
-        MSDIA_PATH=$PWD/dist/msdia140.dll ./dist/xdia.exe ./tests/hello-wdm.pdb
+      run: set "MSDIA_PATH=./dist/msdia140.dll" & ./dist/xdia.exe ./tests/hello-wdm.pdb
     - uses: actions/upload-artifact@v4.3.3
       with:
         name: xdia
@@ -48,6 +46,7 @@ jobs:
         cmake -Bbuild -S.
         cmake --build build --target xdialdr
         cmake --install build --prefix dist
+        cd dist; tar -cvf xdialdr.tar *
     - name: Test
       run: |
         export MSDIA_PATH=$PWD/xdia/msdia140.dll
@@ -56,7 +55,7 @@ jobs:
     - uses: actions/upload-artifact@v4.3.3
       with:
         name: xdialdr
-        path: dist
+        path: dist/xdialdr.tar
 
   build-py-sdist:
     name: Build pyxdia sdist
@@ -74,6 +73,7 @@ jobs:
         with:
           name: pyxdia-src
           path: dist/*.tar.gz
+          compression-level: 0  # Already compressed
 
   build-py-wheels:
     needs: ["build-py-sdist", "build-xdia", "build-xdialdr"]
@@ -90,17 +90,19 @@ jobs:
     - uses: actions/checkout@v4.1.7
       with:
         fetch-depth: 0
-    - name: Install xdia
+    - name: Install xdia artifact
       uses: actions/download-artifact@v4.1.7
       with:
         name: xdia
         path: pyxdia/pyxdia/bin
-    - name: Install xdialdr
+    - name: Download xdialdr artifact
       uses: actions/download-artifact@v4.1.7
       if: ${{ !startsWith(matrix.os, 'windows') }}
       with:
         name: xdialdr
-        path: pyxdia/pyxdia/bin
+    - name: Install xdialdr
+      if: ${{ !startsWith(matrix.os, 'windows') }}
+      run: tar -xvf xdialdr.tar -C pyxdia/pyxdia/bin
     - name: Build wheel
       uses: pypa/cibuildwheel@v2.19.2
       with:

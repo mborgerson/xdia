@@ -33,11 +33,6 @@ class PDB:
         if platform.system() == "Windows":
             cmd = [XDIA_EXE_PATH]
         else:
-            # FIXME: Move to post-install hook
-            for path in [XDIALDR_PATH, BLINK_PATH]:
-                if path.exists():
-                    os.chmod(str(path), 0o755)
-
             blink_required = (platform.system() != "Linux") or (platform.machine() != "x86_64")
             if blink_required:
                 # XXX: Work around blink VFS mount issue

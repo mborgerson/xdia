@@ -5,6 +5,7 @@ import shutil
 import platform
 import os
 import stat
+import tarfile
 from zipfile import ZipFile
 from urllib.request import urlretrieve, urlcleanup
 from pathlib import Path
@@ -108,10 +109,9 @@ class CheckXdiaInstallation(Command):
 
         # Install xdialdr, if required
         if platform.system() != "Windows":
-            path = self._download_file(f"{xdia_release_url}/v{version}/xdialdr.zip")
-            with ZipFile(path) as z:
-                z.extractall(self._bin_dir)
-            self._mark_file_executable(self._xdialdr_path)
+            path = self._download_file(f"{xdia_release_url}/v{version}/xdialdr.tar.xz")
+            with tarfile.open(path, "r:xz") as tar:
+                tar.extractall(path=self._bin_dir)
 
     @staticmethod
     def _is_blink_required() -> bool:
