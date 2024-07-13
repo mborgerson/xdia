@@ -9,3 +9,30 @@ pyxdia depends on [xdia](https://github.com/mborgerson/xdia), a native Windows e
 ## License
 
 pyxdia source is released under MIT license. pyxdia wheels include binaries that are released under individual licenses, with license text available within the wheel.
+
+## Installation
+
+Install pyxdia with:
+
+```
+pip install pyxdia
+```
+
+## Usage
+
+Read globals:
+
+```
+In [1]: from pyxdia import PDB
+
+In [2]: pdb = PDB("./hello-wdm.pdb")
+
+In [3]: pdb.globals[0]
+Out[3]:
+{'addressOffset': 48,
+ 'addressSection': 1,
+ 'name': '_guard_dispatch_icall_nop',
+ 'relativeVirtualAddress': 4144,
+ 'symTag': 'Function',
+ 'undecoratedName': '_guard_dispatch_icall_nop'}
+```

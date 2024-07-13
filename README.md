@@ -79,7 +79,7 @@ cd dist
 
 ## Python Support
 
-pyxdia provides a Python interface to xdia. PyPI release coming shortly.
+[pyxdia](https://pypi.org/project/pyxdia) provides a Python interface to xdia.
 
 ## License
 
