@@ -145,6 +145,8 @@ jobs:
     needs: ["build-py-wheels"]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+    permissions:
+      contents: write
     steps:
     - name: Download xdia artifact
       uses: actions/download-artifact@v4.1.7
