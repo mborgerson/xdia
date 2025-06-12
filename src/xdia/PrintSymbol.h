@@ -24,7 +24,10 @@ extern const char * const rgCallingConvention[];
 extern const char * const rgLanguage[];
 extern const char * const rgLocationTypeString[];
 
-void PrintPublicSymbol( IDiaSymbol* );
+json PrintSymbolTag(IDiaSymbol *pSymbol);
+json PrintSymbolAddress(IDiaSymbol *pSymbol);
+
+json PrintPublicSymbol( IDiaSymbol* );
 json PrintGlobalSymbol( IDiaSymbol* );
 void PrintSymbol( IDiaSymbol* , DWORD );
 void PrintSymTag( DWORD );

@@ -485,74 +485,6 @@ const char * const rgLocationTypeString[] =
   "RegRelAliasIndir"
 };
 
-#if 0
-
-////////////////////////////////////////////////////////////
-// Print a public symbol info: name, VA, RVA, SEG:OFF
-//
-void PrintPublicSymbol(IDiaSymbol *pSymbol)
-{
-  DWORD dwSymTag;
-  DWORD dwRVA;
-  DWORD dwSeg;
-  DWORD dwOff;
-  BSTR bstrName;
-  
-  if (pSymbol->get_symTag(&dwSymTag) != S_OK) {
-    return;
-  }
-
-  if (pSymbol->get_relativeVirtualAddress(&dwRVA) != S_OK) {
-    dwRVA = 0xFFFFFFFF;
-  }
-
-  pSymbol->get_addressSection(&dwSeg);
-  pSymbol->get_addressOffset(&dwOff);
-
-  printf("%s: [%08X][%04X:%08X] ", rgTags[dwSymTag], dwRVA, dwSeg, dwOff);
-  
-  if (dwSymTag == SymTagThunk) {
-    if (pSymbol->get_name(&bstrName) == S_OK) {
-      printf("%s\n", wc2c(bstrName));
-
-      SysFreeString(bstrName);
-    }
-
-    else {
-      if (pSymbol->get_targetRelativeVirtualAddress(&dwRVA) != S_OK) {
-        dwRVA = 0xFFFFFFFF;
-      }
-
-      pSymbol->get_targetSection(&dwSeg);
-      pSymbol->get_targetOffset(&dwOff);
-
-      printf("target -> [%08X][%04X:%08X]\n", dwRVA, dwSeg, dwOff);
-    }
-  }
-
-  else {
-    // must be a function or a data symbol
-
-    BSTR bstrUndname;
-
-    if (pSymbol->get_name(&bstrName) == S_OK) {
-      if (pSymbol->get_undecoratedName(&bstrUndname) == S_OK) {
-        printf("%s(%s)\n", wc2c(bstrName), wc2c(bstrUndname));
-
-        SysFreeString(bstrUndname);
-      }
-
-      else {
-        printf("%s\n", wc2c(bstrName));
-      }
-
-      SysFreeString(bstrName);
-    }
-  }
-}
-
-#endif
-
 json PrintSymbolTag(IDiaSymbol *pSymbol)
 {
   DWORD dwSymTag;
@@ -591,6 +523,61 @@ json PrintSymbolAddress(IDiaSymbol *pSymbol)
   return j;
 }
 
+json PrintTargetInfo(IDiaSymbol *pSymbol)
+{
+  DWORD dwRVA = 0xFFFFFFFF;
+  DWORD dwSeg = 0;
+  DWORD dwOff = 0;
+  BSTR bstrName;
+
+  json j;
+
+  if (pSymbol->get_name(&bstrName) == S_OK) {
+    // FIXME
+    SysFreeString(bstrName);
+  } else {
+    if (pSymbol->get_targetRelativeVirtualAddress(&dwRVA) == S_OK) {
+      j["targetRelativeVirtualAddress"] = dwRVA;
+    } else {
+      j["targetRelativeVirtualAddress"] = nullptr;
+    }
+    pSymbol->get_targetSection(&dwSeg);
+    j["targetSection"] = dwSeg;
+    pSymbol->get_targetOffset(&dwOff);
+    j["targetOffset"] = dwOff;
+  }
+
+  return j;
+}
+
+////////////////////////////////////////////////////////////
+// Print a public symbol info: name, VA, RVA, SEG:OFF
+//
+json PrintPublicSymbol(IDiaSymbol *pSymbol)
+{
+  DWORD dwSymTag;
+
+  json j;
+  
+  if (pSymbol->get_symTag(&dwSymTag) != S_OK) {
+    return j;
+  }
+
+  BOOL is_function = FALSE;
+  pSymbol->get_function(&is_function);
+
+  j.update(PrintSymbolTag(pSymbol));
+  j.update(PrintSymbolAddress(pSymbol));
+  j.update(PrintName(pSymbol));
+  if (dwSymTag == SymTagThunk) {
+    j.update(PrintTargetInfo(pSymbol));
+  }
+  
+  j["is_function"] = (bool)is_function;
+
+  return j;
+}
+
 ////////////////////////////////////////////////////////////
 // Print a global symbol info: name, VA, RVA, SEG:OFF
 //
@@ -610,22 +597,8 @@ json PrintGlobalSymbol(IDiaSymbol *pSymbol)
   j.update(PrintSymbolTag(pSymbol));
   j.update(PrintSymbolAddress(pSymbol));
   j.update(PrintName(pSymbol));
-  
   if (dwSymTag == SymTagThunk) {
-    BSTR bstrName;
-    if (pSymbol->get_name(&bstrName) == S_OK) {
-      SysFreeString(bstrName);
-    } else {
-      if (pSymbol->get_targetRelativeVirtualAddress(&dwRVA) == S_OK) {
-        j["targetRelativeVirtualAddress"] = dwRVA;
-      } else {
-        j["targetRelativeVirtualAddress"] = nullptr;
-      }
-      pSymbol->get_targetSection(&dwSeg);
-      j["targetSection"] = dwSeg;
-      pSymbol->get_targetOffset(&dwOff);
-      j["targetOffset"] = dwOff;
-    }
+    j.update(PrintTargetInfo(pSymbol));
   }
 
   return j;

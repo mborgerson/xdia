@@ -17,6 +17,7 @@ DWORD g_dwMachineType = CV_CFL_80386;
 bool LoadDataFromPdb(const wchar_t *szFilename, IDiaDataSource **ppSource,
                      IDiaSession **ppSession, IDiaSymbol **ppGlobal);
 void DumpAllPdbInfo(IDiaSession *pSession, IDiaSymbol *pGlobal);
+json DumpAllPublics(IDiaSymbol *pGlobal);
 json DumpAllGlobals(IDiaSymbol *pGlobal);
 
 int wmain( int argc, wchar_t *argv[ ] )
@@ -117,7 +118,7 @@ void DumpAllPdbInfo(IDiaSession *pSession, IDiaSymbol *pGlobal)
   json j;
 
   // DumpAllMods(pGlobal);
-  // DumpAllPublics(pGlobal);
+  j["publics"] = DumpAllPublics(pGlobal);
   // DumpAllSymbols(pGlobal);
   j["globals"] = DumpAllGlobals(pGlobal);
   // DumpAllTypes(pGlobal);
@@ -130,6 +131,31 @@ void DumpAllPdbInfo(IDiaSession *pSession, IDiaSymbol *pGlobal)
   // DumpAllOEMs(pGlobal);
 
   puts(j.dump(2).c_str());
+}
+
+////////////////////////////////////////////////////////////
+// Dump all the public symbols - SymTagPublicSymbol
+//
+json DumpAllPublics(IDiaSymbol *pGlobal)
+{
+  json j;
+
+  IDiaEnumSymbols *pEnumSymbols;
+  if (FAILED(pGlobal->findChildren(SymTagPublicSymbol, NULL, nsNone, &pEnumSymbols))) {
+    return j;
+  }
+
+  IDiaSymbol *pSymbol;
+  ULONG celt = 0;
+  while (SUCCEEDED(pEnumSymbols->Next(1, &pSymbol, &celt)) && (celt == 1)) {
+    j.push_back(PrintPublicSymbol(pSymbol));
+
+    pSymbol->Release();
+  }
+
+  pEnumSymbols->Release();
+
+  return j;
 }
 
 ////////////////////////////////////////////////////////////
