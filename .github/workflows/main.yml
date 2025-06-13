@@ -115,7 +115,7 @@ jobs:
 
         # FIXME: This is based only on blink requirement. Check the binary to find the
         #        actual requirement. This works for 1.1.0 release.
-        MACOSX_DEPLOYMENT_TARGET: ${{ matrix.arch == 'arm64' && '14' || '11' }}
+        MACOSX_DEPLOYMENT_TARGET: ${{ matrix.arch == 'arm64' && '14' || '13' }}
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: pyxdia-whl-${{ matrix.wheel }}
