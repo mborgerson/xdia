@@ -22,7 +22,7 @@ pip install pyxdia
 
 Read globals:
 
-```
+```py
 In [1]: from pyxdia import PDB
 
 In [2]: pdb = PDB("./hello-wdm.pdb")
