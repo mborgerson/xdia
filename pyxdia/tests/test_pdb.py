@@ -17,7 +17,7 @@ class TestPDB(unittest.TestCase):
     """
 
     def test_instantiate(self):
-        pdb = PDB(os.path.join(PDB_TEST_FILES, "hello-wdm.pdb"))
+        PDB(os.path.join(PDB_TEST_FILES, "hello-wdm.pdb"))
 
     def test_list_globals(self):
         pdb = PDB(os.path.join(PDB_TEST_FILES, "hello-wdm.pdb"))
