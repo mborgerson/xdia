@@ -1,5 +1,4 @@
 import json
-import os
 import pathlib
 import platform
 import subprocess
@@ -37,7 +36,9 @@ class PDB:
         else:
             cmd = [XDIALDR_PATH]
 
-        diadump_s = subprocess.check_output(cmd + [str(pdb_path)], encoding="utf-8", env=env)
+        diadump_s = subprocess.check_output(
+            cmd + [str(pdb_path)], encoding="utf-8", env=env
+        )
         self._pdb_data = json.loads(diadump_s)
 
     def pp(self) -> None:
