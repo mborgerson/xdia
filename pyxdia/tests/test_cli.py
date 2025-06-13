@@ -18,7 +18,15 @@ class TestCli(unittest.TestCase):
     """
 
     def test_cli(self):
-        subprocess.run([sys.executable, "-m", "pyxdia", os.path.join(PDB_TEST_FILES, "hello-wdm.pdb")], check=True)
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pyxdia",
+                os.path.join(PDB_TEST_FILES, "hello-wdm.pdb"),
+            ],
+            check=True,
+        )
 
 
 if __name__ == "__main__":
