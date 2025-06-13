@@ -53,3 +53,10 @@ class PDB:
         List all globals.
         """
         return self._pdb_data["globals"]
+
+    @property
+    def publics(self) -> list[dict[str, int | str]]:
+        """
+        List all publics.
+        """
+        return self._pdb_data["publics"]
