@@ -32,12 +32,10 @@ class PDB:
 
         if platform.system() == "Windows":
             cmd = [XDIA_EXE_PATH]
+        elif platform.system() != "Linux" or platform.machine() != "x86_64":
+            cmd = [BLINK_PATH, XDIALDR_PATH]
         else:
-            blink_required = (platform.system() != "Linux") or (platform.machine() != "x86_64")
-            if blink_required:
-                cmd = [BLINK_PATH, XDIALDR_PATH]
-            else:
-                cmd = [XDIALDR_PATH]
+            cmd = [XDIALDR_PATH]
 
         diadump_s = subprocess.check_output(cmd + [str(pdb_path)], encoding="utf-8", env=env)
         self._pdb_data = json.loads(diadump_s)
