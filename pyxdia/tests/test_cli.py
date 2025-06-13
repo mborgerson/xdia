@@ -6,7 +6,6 @@ import subprocess
 import sys
 import unittest
 
-from pyxdia import PDB
 
 
 PDB_TEST_FILES = os.getenv("PDB_TEST_FILES")

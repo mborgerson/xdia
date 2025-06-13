@@ -33,6 +33,21 @@ class TestPDB(unittest.TestCase):
             "undecoratedName": "DriverEntry",
         }
 
+    def test_list_publics(self):
+        pdb = PDB(os.path.join(PDB_TEST_FILES, "hello-wdm.pdb"))
+        assert len(pdb.publics) == 31
+
+        publics_by_name = {g["name"]: g for g in pdb.publics}
+        assert publics_by_name["DbgPrint"] == {
+            "addressOffset": 0,
+            "addressSection": 1,
+            "is_function": True,
+            "name": "DbgPrint",
+            "relativeVirtualAddress": 4096,
+            "symTag": "PublicSymbol",
+            "undecoratedName": "DbgPrint",
+        }
+
 
 if __name__ == "__main__":
     unittest.main()
