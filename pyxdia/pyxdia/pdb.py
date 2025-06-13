@@ -35,13 +35,7 @@ class PDB:
         else:
             blink_required = (platform.system() != "Linux") or (platform.machine() != "x86_64")
             if blink_required:
-                # XXX: Work around blink VFS mount issue
-                env["BLINK_PREFIX"] = "/tmp"
-                env["MSDIA_PATH"] = "/SystemRoot" + env["MSDIA_PATH"]
-                env["XDIA_PATH"] = "/SystemRoot" + env["XDIA_PATH"]
-                pdb_path = pathlib.Path("/SystemRoot") / pdb_path.relative_to("/")
-                xdialdr_path = pathlib.Path("/SystemRoot") / XDIALDR_PATH.relative_to("/")
-                cmd = [BLINK_PATH, xdialdr_path]
+                cmd = [BLINK_PATH, XDIALDR_PATH]
             else:
                 cmd = [XDIALDR_PATH]
 
