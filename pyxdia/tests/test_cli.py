@@ -7,7 +7,6 @@ import sys
 import unittest
 
 
-
 PDB_TEST_FILES = os.getenv("PDB_TEST_FILES")
 assert PDB_TEST_FILES is not None, "Set environment variable PDB_TEST_FILES"
 
