@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import gzip
 import shutil
 import platform
 import os
@@ -123,46 +122,32 @@ class CheckXdiaInstallation(Command):
     def _is_blink_installed(self) -> bool:
         return all(file.exists() for file in self._get_blink_install_list())
 
-    @staticmethod
-    def gunzip(src, dst):
-        with gzip.open(src, "rb") as s_file, open(dst, "wb") as d_file:
-            shutil.copyfileobj(s_file, d_file, 65536)
-
     def _install_blink(self):
-        blink_version = "1.1.0"
+        blink_version = "dev-98f95e8"
         blink_release_platform_filename_parts = {
-            "darwin-arm64": "darwin-arm64.gz",  # ???
-            "darwin-x86_64": "darwin-x86_64.elf",  # ???
-            "freebsd-x86_64": "freebsd-x86_64.elf.gz",
-            "linux-aarch64": "linux-aarch64.elf.gz",
-            "linux-arm": "linux-arm.elf.gz",
-            "linux-i486": "linux-i486.elf.gz",
-            "linux-mips": "linux-mips.elf.gz",
-            "linux-mips64": "linux-mips64.elf.gz",
-            "linux-mips64el": "linux-mips64el.elf.gz",
-            "linux-mipsel": "linux-mipsel.elf.gz",
-            "linux-powerpc": "linux-powerpc.elf.gz",
-            "linux-powerpc64le": "linux-powerpc64le.elf.gz",
-            "linux-s390x": "linux-s390x.elf.gz",
-            "linux-x86_64": "linux-x86_64.elf.gz",
-            "openbsd-x86_64": "openbsd-x86_64.elf.gz",
+            "darwin-x86_64": "darwin-x86_64",
+            "darwin-arm64": "darwin-arm64",
+            "linux-aarch64": "linux-aarch64",
         }
         tag = f"{platform.system().lower()}-{platform.machine().lower()}"
         blink_platform = blink_release_platform_filename_parts.get(tag, None)
         assert blink_platform is not None, "FIXME: Unhandled platform tag"
 
-        blink_filename = f"blink-{blink_version}-{blink_platform}"
-        blink_release_url = f"https://github.com/jart/blink/releases/download/{blink_version}/{blink_filename}"
+        blink_dirname = f"blink-{blink_version}-{blink_platform}"
+        blink_filename = f"{blink_dirname}.tgz"
+        blink_release_url = f"https://github.com/mborgerson/blink/releases/download/{blink_version}/{blink_filename}"
 
         self._download_file(blink_release_url)
-        if blink_filename.endswith(".gz"):
-            self.gunzip(blink_filename, self._blink_path)
-        else:
-            shutil.copyfile(blink_filename, self._blink_path)
-        self._mark_file_executable(self._blink_path)
+        with tarfile.open(blink_filename, 'r:gz') as tar:
+            member = tar.getmember(f"{blink_dirname}/bin/blink")
+            member.name = 'blink'
+            tar.extract(member, path=self._blink_path.parent)
 
-        blink_license_url = "https://raw.githubusercontent.com/jart/blink/master/LICENSE"
-        self._download_file(blink_license_url, self._blink_path.parent / "blink.LICENSE.txt")
+            member = tar.getmember(f"{blink_dirname}/LICENSE")
+            member.name = 'blink.LICENSE.txt'
+            tar.extract(member, path=self._blink_path.parent)
+
+        self._mark_file_executable(self._blink_path)
 
     def run(self):
         if not self._is_xdia_installed():
