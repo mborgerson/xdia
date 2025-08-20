@@ -7,12 +7,19 @@ char *wc2c(const char16_t *s)
 {
     UErrorCode errorCode = U_ZERO_ERROR;
     int32_t len = 0;
-    u_strToUTF8(NULL, 0, &len, s, -1, &errorCode);
-    assert(errorCode == U_BUFFER_OVERFLOW_ERROR);
+
+    if (*s) {
+        u_strToUTF8(NULL, 0, &len, s, -1, &errorCode);
+        assert(errorCode == U_BUFFER_OVERFLOW_ERROR);
+    }
 
     char *dst = malloc(len + 1);
     errorCode = U_ZERO_ERROR;
-    u_strToUTF8(dst, len + 1, NULL, s, -1, &errorCode);
+    if (len) {
+        u_strToUTF8(dst, len + 1, NULL, s, -1, &errorCode);
+    } else {
+        dst[0] = '\0';
+    }
     assert(!U_FAILURE(errorCode));
 
     return dst;
