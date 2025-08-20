@@ -766,7 +766,7 @@ INT WINAPI DECLSPEC_HOTPATCH MultiByteToWideChar(UINT CodePage, DWORD dwFlags,
     assert(cbMultiByte != 0);
     assert(lpWideCharStr && cchWideChar);
 
-    LOG("%s(%d, %x, %s, %d, %p, %d)", __func__, codepage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
+    LOG("%s(%d, %x, %s, %d, %p, %d)", __func__, CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
 
     UErrorCode errorCode = U_ZERO_ERROR;
     int32_t destLength = 0;
