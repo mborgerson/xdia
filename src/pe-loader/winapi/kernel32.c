@@ -980,6 +980,13 @@ PVOID WINAPI DECLSPEC_HOTPATCH FlsGetValue( DWORD index )
     return fls_slots[index].data;
 }
 
+WINBASEAPI PVOID WINAPI FlsGetValue2(DWORD index)
+{
+    LOG("%s", __func__);
+    SetLastError(0);
+    return FlsGetValue(index);
+}
+
 BOOL WINAPI DECLSPEC_HOTPATCH TlsFree(DWORD index)
 {
     LOG("%s", __func__);
@@ -1377,6 +1384,7 @@ static ModuleExport kernel32_exports[] = {
     E(FlushFileBuffers),
     E(FlsAlloc),
     E(FlsGetValue),
+    E(FlsGetValue2),
     E(FlsFree),
     E(FlsSetValue),
     E(FreeEnvironmentStringsW),
