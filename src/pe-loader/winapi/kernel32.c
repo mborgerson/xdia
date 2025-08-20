@@ -1066,8 +1066,7 @@ BOOL WINAPI DECLSPEC_HOTPATCH VirtualProtect(void *addr, SIZE_T size,
                                              DWORD new_prot, DWORD *old_prot)
 {
     LOG("%s", __func__);
-    assert(0);
-    return FALSE;
+    return TRUE;
 }
 
 SIZE_T WINAPI DECLSPEC_HOTPATCH VirtualQuery(LPCVOID addr,
