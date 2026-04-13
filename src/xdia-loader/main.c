@@ -6,7 +6,10 @@ char16_t *command_line_w;
 
 int main(int argc, const char *argv[])
 {
-    assert(argc == 2 && "usage: xdialdr <pdb>");
+    if (argc != 2) {
+        puts("usage: xdialdr <pdb>");
+        return 1;
+    };
     asprintf(&command_line_a, "xdialdr %s", argv[1]);
     command_line_w = c2wc(command_line_a);
 
