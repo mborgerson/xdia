@@ -10,6 +10,7 @@
 // Debug Interface Access SDK API.
 //
 
+#include <algorithm>
 #include <wchar.h>
 #include <wctype.h>
 #include "guiddef.h"
