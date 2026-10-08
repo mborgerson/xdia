@@ -10,12 +10,12 @@
 // Debug Interface Access SDK API.
 //
 
+#include "stdafx.h"
 #include <algorithm>
 #include <wchar.h>
 #include <wctype.h>
 #include "guiddef.h"
 
-#include "stdafx.h"
 #include "DIA2Dump.h"
 #include "PrintSymbol.h"
 
