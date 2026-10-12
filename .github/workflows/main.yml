@@ -19,7 +19,7 @@ jobs:
         cmake --install build --prefix dist
     - name: Test
       run: set "MSDIA_PATH=./dist/msdia140.dll" & ./dist/xdia.exe ./tests/hello-wdm.pdb
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: xdia
         path: dist
@@ -47,7 +47,7 @@ jobs:
         export MSDIA_PATH=$PWD/xdia/msdia140.dll
         export XDIA_PATH=$PWD/xdia/xdia.exe
         ./dist/xdialdr ./tests/hello-wdm.pdb
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: xdialdr
         path: dist/xdialdr.tar
@@ -64,7 +64,7 @@ jobs:
         run: |
           python -m pip install --user build
           python -m build --sdist --outdir dist ./pyxdia
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pyxdia-src
           path: dist/*.tar.gz
@@ -114,7 +114,7 @@ jobs:
         # FIXME: This is based only on blink requirement. Check the binary to find the
         #        actual requirement. This works for 1.1.0 release.
         MACOSX_DEPLOYMENT_TARGET: ${{ matrix.arch == 'arm64' && '14' || '13' }}
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: pyxdia-whl-${{ matrix.wheel }}
         path: ./wheelhouse/*.whl
