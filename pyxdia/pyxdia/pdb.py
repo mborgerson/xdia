@@ -1,6 +1,7 @@
 import json
 import pathlib
 import platform
+import shutil
 import subprocess
 from pprint import pprint
 
@@ -9,7 +10,12 @@ ROOT_PATH = pathlib.Path(__file__).parent.absolute()
 XDIA_EXE_PATH = ROOT_PATH / "bin" / "xdia.exe"
 MSDIA_DLL_PATH = ROOT_PATH / "bin" / "msdia140.dll"
 XDIALDR_PATH = ROOT_PATH / "bin" / "xdialdr"
-BLINK_PATH = ROOT_PATH / "bin" / "blink"
+_BUNDLED_BLINK_PATH = ROOT_PATH / "bin" / "blink"
+BLINK_PATH = (
+    _BUNDLED_BLINK_PATH
+    if _BUNDLED_BLINK_PATH.exists()
+    else pathlib.Path(shutil.which("blink") or _BUNDLED_BLINK_PATH)
+)
 
 
 class PDB:
