@@ -32,7 +32,7 @@ class PDB:
         if platform.system() == "Windows":
             cmd = [XDIA_EXE_PATH]
         elif platform.system() != "Linux" or platform.machine() != "x86_64":
-            cmd = [BLINK_PATH, XDIALDR_PATH]
+            cmd = [BLINK_PATH, "-m", XDIALDR_PATH]
         else:
             cmd = [XDIALDR_PATH]
 
