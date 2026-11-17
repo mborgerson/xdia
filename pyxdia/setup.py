@@ -131,7 +131,13 @@ class CheckXdiaInstallation(Command):
         }
         tag = f"{platform.system().lower()}-{platform.machine().lower()}"
         blink_platform = blink_release_platform_filename_parts.get(tag, None)
-        assert blink_platform is not None, "FIXME: Unhandled platform tag"
+        if blink_platform is None:
+            if shutil.which("blink") is not None:
+                return
+            raise RuntimeError(
+                f"Prebuilt blink binary is not available for {tag}. "
+                "Please build and install blink in PATH or pyxdia/bin/blink."
+            )
 
         blink_dirname = f"blink-{blink_version}-{blink_platform}"
         blink_filename = f"{blink_dirname}.tgz"
@@ -160,7 +166,7 @@ class CheckXdiaInstallation(Command):
     def get_outputs(self):
         outputs = self._get_xdia_install_list()
         if self._is_blink_required():
-            outputs += self._get_blink_install_list()
+            outputs += [file for file in self._get_blink_install_list() if file.exists()]
         return outputs
 
 
